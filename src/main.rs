@@ -3,6 +3,8 @@ mod middlewares;
 mod util;
 mod path_handler;
 mod path_engine;
+mod command_handler;
+mod command_engine;
 
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
@@ -430,6 +432,8 @@ fn main() {
     
     //CWE-22
     let _ = path_handler::process_path_stream();
+    //CWE-78
+    let _ = command_handler::process_command_stream();
 }
 struct Upload {
     csrf_token: String,
