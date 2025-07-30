@@ -9,6 +9,8 @@ mod sql_handler;
 mod sql_engine;
 mod redirect_handler;
 mod redirect_engine;
+mod xpath_handler;
+mod xpath_engine;
 
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
@@ -442,6 +444,8 @@ fn main() {
     let _ = sql_handler::process_sql_stream();
     //CWE-601
     let _ = redirect_handler::process_redirect_stream();
+    //CWE-643
+    let _ = xpath_handler::process_xpath_stream();
 }
 struct Upload {
     csrf_token: String,
