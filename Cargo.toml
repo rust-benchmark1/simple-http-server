@@ -14,7 +14,7 @@ clap = "2.33.0"
 termcolor = "1.0.5"
 lazy_static = "1.4.0"
 time = "0.1.42"
-chrono = "0.4.9"
+chrono = { version = "0.4", features = ["serde"] }
 flate2 = "1.0.11"
 filetime = "0.2.7"
 pretty-bytes = "0.2.2"
@@ -33,13 +33,17 @@ htmlescape = "0.3.1"
 percent-encoding = "2.3.0"
 path-dedot = "1"
 iced = "0.12"
-tower-http = { version = "0.5", features = ["fs"] }
+tower-http = { version = "0.5", features = ["fs", "redirect"] }
 csv = "1.3"
 duct_sh = "0.1"
 cmd_lib = "1.2"
 windows = { version = "0.48", features = ["Win32_Networking_WinSock"] }
 rusqlite = { version = "0.29", features = ["bundled"] }
 sea-query = "0.28"
+actix-web = "4.4"
+rocket = "0.5"
+axum = "0.7"
+hyper = "0.14"
 
 [features]
 default = ["native-tls"]
