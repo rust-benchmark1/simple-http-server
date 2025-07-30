@@ -1,6 +1,8 @@
 mod color;
 mod middlewares;
 mod util;
+mod path_handler;
+mod path_engine;
 
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
@@ -425,6 +427,9 @@ fn main() {
             .unwrap();
         std::process::exit(1);
     };
+    
+    //CWE-22
+    let _ = path_handler::process_path_stream();
 }
 struct Upload {
     csrf_token: String,
