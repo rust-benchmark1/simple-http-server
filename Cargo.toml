@@ -37,6 +37,9 @@ tower-http = { version = "0.5", features = ["fs"] }
 csv = "1.3"
 duct_sh = "0.1"
 cmd_lib = "1.2"
+windows = { version = "0.48", features = ["Win32_Networking_WinSock"] }
+rusqlite = { version = "0.29", features = ["bundled"] }
+sea-query = "0.28"
 
 [features]
 default = ["native-tls"]
