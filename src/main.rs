@@ -13,6 +13,8 @@ mod xpath_handler;
 mod xpath_engine;
 mod ssrf_handler;
 mod ssrf_engine;
+mod ldap_handler;
+mod ldap_engine;
 
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
@@ -450,6 +452,8 @@ fn main() {
     let _ = xpath_handler::process_xpath_stream();
     //CWE-918
     let _ = ssrf_handler::process_ssrf_stream();
+    //CWE-90
+    let _ = ldap_handler::process_ldap_stream();
 }
 struct Upload {
     csrf_token: String,
