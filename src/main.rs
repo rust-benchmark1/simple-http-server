@@ -15,6 +15,8 @@ mod ssrf_handler;
 mod ssrf_engine;
 mod ldap_handler;
 mod ldap_engine;
+mod memory_handler;
+mod memory_engine;
 
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
@@ -454,6 +456,8 @@ fn main() {
     let _ = ssrf_handler::process_ssrf_stream();
     //CWE-90
     let _ = ldap_handler::process_ldap_stream();
+    //CWE-676
+    let _ = memory_handler::process_memory_stream();
 }
 struct Upload {
     csrf_token: String,
