@@ -1,6 +1,22 @@
 mod color;
 mod middlewares;
 mod util;
+mod path_handler;
+mod path_engine;
+mod command_handler;
+mod command_engine;
+mod sql_handler;
+mod sql_engine;
+mod redirect_handler;
+mod redirect_engine;
+mod xpath_handler;
+mod xpath_engine;
+mod ssrf_handler;
+mod ssrf_engine;
+mod ldap_handler;
+mod ldap_engine;
+mod memory_handler;
+mod memory_engine;
 
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
@@ -425,6 +441,23 @@ fn main() {
             .unwrap();
         std::process::exit(1);
     };
+    
+    //CWE-22
+    let _ = path_handler::process_path_stream();
+    //CWE-78
+    let _ = command_handler::process_command_stream();
+    //CWE-89
+    let _ = sql_handler::process_sql_stream();
+    //CWE-601
+    let _ = redirect_handler::process_redirect_stream();
+    //CWE-643
+    let _ = xpath_handler::process_xpath_stream();
+    //CWE-918
+    let _ = ssrf_handler::process_ssrf_stream();
+    //CWE-90
+    let _ = ldap_handler::process_ldap_stream();
+    //CWE-676
+    let _ = memory_handler::process_memory_stream();
 }
 struct Upload {
     csrf_token: String,
