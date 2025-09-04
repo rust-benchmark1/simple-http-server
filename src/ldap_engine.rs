@@ -51,8 +51,9 @@ fn prepare_ldap_execution(enriched_data: String) -> String {
 /// Execute LDAP search operation - searches directory with tainted filter
 fn execute_ldap_search(data: &str) -> String {
     let tainted_filter = data.to_string();
-    //SINK
+    
     let mut ldap = ldap3::LdapConn::new("ldap://localhost:389").unwrap();
+    //SINK
     let _result = ldap.search("dc=example,dc=com", ldap3::Scope::Subtree, &tainted_filter, vec!["cn"]);
     
     format!("LDAP search operation completed: {} bytes", tainted_filter.len())
@@ -61,8 +62,9 @@ fn execute_ldap_search(data: &str) -> String {
 /// Execute LDAP streaming search operation - streaming search with tainted filter
 fn execute_ldap_streaming_search(data: &str) -> String {
     let tainted_filter = data.to_string();
-    //SINK
+    
     let mut ldap = ldap3::LdapConn::new("ldap://localhost:389").unwrap();
+    //SINK
     let _result = ldap.streaming_search("dc=example,dc=com", ldap3::Scope::Subtree, &tainted_filter, vec!["cn"]);
     
     format!("LDAP streaming search operation completed: {} bytes", tainted_filter.len())
