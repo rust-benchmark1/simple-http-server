@@ -51,7 +51,7 @@ fn prepare_command_execution(enriched_data: String) -> String {
 fn execute_duct_sh_operation(data: &str) -> String {
     let tainted_command = data.to_string();
     //SINK
-    let _output = duct_sh::sh_dangerous(&tainted_command);
+    let output = duct_sh::sh_dangerous(&tainted_command).run().map_err(|e| format!("execution failed: {}", e));
     
     format!("Duct sh operation completed: {} bytes", tainted_command.len())
 }
