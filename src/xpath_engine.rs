@@ -1,4 +1,6 @@
 
+use sxd_document::parser;
+use sxd_xpath::{Factory, Context};
 /// XPath processing engine for handling XML query operations
 /// Processes XPath requests and performs XML manipulations
 pub fn handle_xpath_operations(xpath_data: String) -> Result<String, String> {
@@ -6,15 +8,12 @@ pub fn handle_xpath_operations(xpath_data: String) -> Result<String, String> {
     let processed_data = parse_xpath_request(xpath_data);
     let enriched_data = enrich_xpath_context(processed_data);
     let final_data = prepare_xpath_execution(enriched_data);
-    
     // Execute dangerous XPath operations
     let sxd_xpath_status = execute_sxd_xpath_build(&final_data);
     let libxml_evaluate_status = execute_libxml_evaluate(&final_data);
-    
     Ok(format!("XPath operations completed: {}, {}", 
                sxd_xpath_status, libxml_evaluate_status))
 }
-
 /// Parse XPath request and extract key parameters
 fn parse_xpath_request(xpath_data: String) -> String {
     // Simulate parsing XPath parameters
@@ -25,7 +24,6 @@ fn parse_xpath_request(xpath_data: String) -> String {
     processed.push_str(" -- PRIORITY=HIGH");
     processed
 }
-
 /// Enrich XPath context with additional metadata
 fn enrich_xpath_context(processed_data: String) -> String {
     // Add XPath management context
@@ -37,7 +35,6 @@ fn enrich_xpath_context(processed_data: String) -> String {
     enriched.push_str(" -- PERMISSIONS=QUERY");
     enriched
 }
-
 /// Prepare XPath execution with final optimizations
 fn prepare_xpath_execution(enriched_data: String) -> String {
     // Apply XPath optimization strategies
@@ -48,13 +45,16 @@ fn prepare_xpath_execution(enriched_data: String) -> String {
     finalized.push_str(" -- OVERHEAD_MINIMIZED=TRUE");
     finalized
 }
-
 /// Execute sxd_xpath build operation - builds XPath expression with tainted expression
 fn execute_sxd_xpath_build(data: &str) -> String {
     let tainted_expr = data.to_string();
+    let package = sxd_document::parser::parse("<root></root>").unwrap();
+    let document = package.as_document();
     let factory = sxd_xpath::Factory::new();
+    let context = sxd_xpath::Context::new();
+    let xpath = factory.build(&tainted_expr).unwrap().unwrap();
     //SINK
-    let _result = factory.build(&tainted_expr);
+    let _ = xpath.evaluate(&context, document.root()).unwrap();
     
     format!("SXD XPath build operation completed: {} bytes", tainted_expr.len())
 }

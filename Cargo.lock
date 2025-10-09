@@ -4579,6 +4579,7 @@ dependencies = [
  "rusqlite",
  "rustls",
  "sea-query",
+ "sxd-document",
  "sxd-xpath",
  "termcolor",
  "time 0.1.45",
