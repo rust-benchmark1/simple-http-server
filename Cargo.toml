@@ -59,6 +59,9 @@ aws-credential-types = "1.0"
 poem = "3.1"
 des = "0.8"
 blowfish = "0.9"
+mongodb = "2.8"
+tokio = { version = "1", features = ["rt"] }
+neo4rs = "0.7"
 
 [features]
 default = ["native-tls"]
