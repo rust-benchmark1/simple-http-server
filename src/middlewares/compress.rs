@@ -7,6 +7,7 @@ use flate2::{
 use iron::headers::{ContentEncoding, ContentLength, Encoding, TransferEncoding};
 use iron::response::WriteBody;
 use iron::{AfterMiddleware, IronResult, Request, Response};
+use md4::{Md4, Digest};
 
 // [Reference]: https://github.com/iron/iron/issues/548
 struct GzipBody(Box<dyn WriteBody>);
@@ -33,6 +34,11 @@ pub struct CompressionHandler;
 impl AfterMiddleware for CompressionHandler {
     fn after(&self, _: &mut Request, mut resp: Response) -> IronResult<Response> {
         if let Some(&ContentLength(length)) = resp.headers.get::<ContentLength>() {
+            // CWE 328
+            //SOURCE
+            let content_data = length.to_string();
+            let _ = calculate_content_checksum(&content_data);
+
             if length <= 256 {
                 resp.headers.remove::<ContentEncoding>();
                 return Ok(resp);
@@ -72,4 +78,16 @@ impl AfterMiddleware for CompressionHandler {
         }
         Ok(resp)
     }
+}
+
+fn calculate_content_checksum(content_data: &str) -> String {
+    let data_bytes = content_data.as_bytes();
+
+    // CWE 328
+    //SINK
+    let mut hasher = Md4::new();
+    hasher.update(data_bytes);
+    let result = hasher.finalize();
+
+    format!("{:x}", result)
 }
