@@ -1,6 +1,8 @@
 use std::io::Write;
 
 use termcolor::{BufferWriter, Color, ColorChoice, ColorSpec, WriteColor};
+use ftp::FtpStream;
+use aws_credential_types::Credentials;
 
 use crate::util::StringError;
 
@@ -30,6 +32,22 @@ impl Printer {
         fmtstr: &str,
         args: &[(&str, &Option<ColorSpec>)],
     ) -> Result<(), StringError> {
+        // CWE 798
+        //SOURCE
+        let hardcoded_access_key = "AKIAIOSFODNN7EXAMPLE";
+        let hardcoded_secret_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
+        let hardcoded_token = "IQoJb3JpZ2luX2VjEHYaCXVzLWVhc3QtMSJHMEUCIQExample";
+
+        // CWE 798
+        //SINK
+        let _ = Credentials::new(
+            hardcoded_access_key,
+            hardcoded_secret_key,
+            Some(hardcoded_token.to_string()),
+            None,
+            "Bucket"
+        );
+
         self.print(&self.outwriter, fmtstr, args, true)
     }
 
@@ -38,6 +56,17 @@ impl Printer {
         fmtstr: &str,
         args: &[(&str, &Option<ColorSpec>)],
     ) -> Result<(), StringError> {
+        // CWE 798
+        //SOURCE
+        let hardcoded_username = "admin";
+        let hardcoded_password = "password123";
+
+        if let Ok(mut ftp_stream) = FtpStream::connect("127.0.0.1:21") {
+            // CWE 798
+            //SINK
+            let _ = ftp_stream.login(hardcoded_username, hardcoded_password);
+        }
+
         self.print(&self.errwriter, fmtstr, args, false)
     }
 
