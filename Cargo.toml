@@ -57,6 +57,8 @@ axum_session = "0.17"
 ftp = "3.0"
 aws-credential-types = "1.0"
 poem = "3.1"
+des = "0.8"
+blowfish = "0.9"
 
 [features]
 default = ["native-tls"]

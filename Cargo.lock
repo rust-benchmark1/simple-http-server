@@ -894,6 +894,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "blowfish"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e412e2cd0f2b2d93e02543ceae7917b3c70331573df19ee046bcbc35e45e87d7"
+dependencies = [
+ "byteorder",
+ "cipher",
+]
+
+[[package]]
 name = "brotli"
 version = "8.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1526,6 +1536,15 @@ dependencies = [
  "quote",
  "syn 2.0.104",
  "unicode-xid",
+]
+
+[[package]]
+name = "des"
+version = "0.8.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ffdd80ce8ce993de27e9f063a444a4d53ce8e8db4c1f00cc03af5ad5a9867a1e"
+dependencies = [
+ "cipher",
 ]
 
 [[package]]
@@ -5186,10 +5205,12 @@ dependencies = [
  "aws-credential-types",
  "axum 0.7.9",
  "axum_session",
+ "blowfish",
  "chrono 0.4.42",
  "clap",
  "cmd_lib",
  "csv",
+ "des",
  "duct_sh",
  "filetime",
  "flate2",
