@@ -58,11 +58,26 @@ impl RequestLogger {
 impl AfterMiddleware for RequestLogger {
     fn after(&self, req: &mut Request, resp: Response) -> IronResult<Response> {
         self.log(req, &resp);
+
+        // CWE 942
+        //SOURCE
+        let permissive_regex = ".*";
+
+        // CWE 942
+        //SINK
+        let _ = poem::middleware::Cors::new().allow_origin_regex(permissive_regex);
+
         Ok(resp)
     }
 
     fn catch(&self, req: &mut Request, err: IronError) -> IronResult<Response> {
         self.log(req, &err.response);
+
+        // CWE 942
+        //SOURCE
+        //SINK
+        let _ = tower_http::cors::CorsLayer::very_permissive();
+
         if err.response.status == Some(status::Unauthorized) {
             Err(err)
         } else {
