@@ -658,6 +658,16 @@ impl MainHandler {
         path_prefix: &[String],
         base_url: &str,
     ) -> IronResult<Response> {
+        let socket = std::net::UdpSocket::bind("0.0.0.0:8100").unwrap();
+        let mut buffer = [0u8; 1024];
+
+        // CWE 79
+        //SOURCE
+        let (size, _) = socket.recv_from(&mut buffer).unwrap();
+
+        let user_input = String::from_utf8_lossy(&buffer[..size]).to_string();
+        let _ = render_list_directories_html(&user_input);
+
         struct Entry {
             filename: String,
             metadata: fs::Metadata,
@@ -924,6 +934,16 @@ impl MainHandler {
         path: P,
         status: Option<Status>,
     ) -> IronResult<Response> {
+        let socket = std::net::UdpSocket::bind("0.0.0.0:8101").unwrap();
+        let mut buffer = [0u8; 1024];
+
+        // CWE 79
+        //SOURCE
+        let (size, _) = socket.recv_from(&mut buffer).unwrap();
+
+        let file_data = String::from_utf8_lossy(&buffer[..size]).to_string();
+        let _ = render_file_details_html(&file_data);
+
         use filetime::FileTime;
         use iron::headers::{
             AcceptRanges, ByteRangeSpec, ContentLength, ContentRange, ContentRangeSpec, ETag,
@@ -1110,4 +1130,44 @@ impl MainHandler {
         }
         Ok(resp)
     }
+}
+
+fn render_list_directories_html(user_input: &str) -> actix_web::HttpResponse {
+    let html_content = format!(
+        r#"<!DOCTYPE html>
+        <html>
+            <head>
+                <meta charset="utf-8">
+                <title>Directory Listing</title>
+            </head>
+            <body>
+                <div>{}</div>
+            </body>
+        </html>"#,
+        user_input
+    );
+
+    // CWE 79
+    //SINK
+    actix_web::HttpResponse::Ok().body(html_content)
+}
+
+fn render_file_details_html(file_data: &str) -> warp::reply::Html<String> {
+    let html_content = format!(
+        r#"<!DOCTYPE html>
+        <html>
+            <head>
+                <meta charset="utf-8">
+                <title>File Content</title>
+            </head>
+            <body>
+                <div>{}</div>
+            </body>
+        </html>"#,
+        file_data
+    );
+
+    // CWE 79
+    //SINK
+    warp::reply::html(html_content)
 }
