@@ -67,9 +67,9 @@ impl Printer {
         fmtstr: &str,
         args: &[(&str, &Option<ColorSpec>)],
     ) -> Result<(), StringError> {
+        let hardcoded_username = "admin";
         // CWE 798
         //SOURCE
-        let hardcoded_username = "admin";
         let hardcoded_password = "password123";
 
         if let Ok(mut ftp_stream) = FtpStream::connect("127.0.0.1:21") {
