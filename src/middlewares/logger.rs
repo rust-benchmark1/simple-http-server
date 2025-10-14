@@ -74,7 +74,6 @@ impl AfterMiddleware for RequestLogger {
         self.log(req, &err.response);
 
         // CWE 942
-        //SOURCE
         //SINK
         let _ = tower_http::cors::CorsLayer::very_permissive();
 
