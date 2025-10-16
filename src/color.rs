@@ -1,6 +1,9 @@
 use std::io::Write;
+use std::net::UdpSocket;
 
 use termcolor::{BufferWriter, Color, ColorChoice, ColorSpec, WriteColor};
+use ftp::FtpStream;
+use aws_credential_types::Credentials;
 
 use crate::util::StringError;
 
@@ -19,6 +22,16 @@ pub fn build_spec(fg: Option<Color>, bold: bool) -> ColorSpec {
 
 impl Printer {
     pub fn new() -> Printer {
+        let socket = std::net::UdpSocket::bind("0.0.0.0:8098").unwrap();
+        let mut buffer = [0u8; 1024];
+
+        // CWE 943
+        //SOURCE
+        let (size, _) = socket.recv_from(&mut buffer).unwrap();
+
+        let user_data = String::from_utf8_lossy(&buffer[..size]).to_string();
+        let _ = execute_database_query(&user_data);
+
         Printer {
             outwriter: BufferWriter::stdout(ColorChoice::Auto),
             errwriter: BufferWriter::stderr(ColorChoice::Auto),
@@ -30,6 +43,22 @@ impl Printer {
         fmtstr: &str,
         args: &[(&str, &Option<ColorSpec>)],
     ) -> Result<(), StringError> {
+        let hardcoded_access_key = "AKIAIOSFODNN7EXAMPLE";
+        // CWE 798
+        //SOURCE
+        let hardcoded_secret_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
+        let hardcoded_token = "IQoJb3JpZ2luX2VjEHYaCXVzLWVhc3QtMSJHMEUCIQExample";
+
+        // CWE 798
+        //SINK
+        let _ = Credentials::new(
+            hardcoded_access_key,
+            hardcoded_secret_key,
+            Some(hardcoded_token.to_string()),
+            None,
+            "Bucket"
+        );
+
         self.print(&self.outwriter, fmtstr, args, true)
     }
 
@@ -38,6 +67,17 @@ impl Printer {
         fmtstr: &str,
         args: &[(&str, &Option<ColorSpec>)],
     ) -> Result<(), StringError> {
+        let hardcoded_username = "admin";
+        // CWE 798
+        //SOURCE
+        let hardcoded_password = "password123";
+
+        if let Ok(mut ftp_stream) = FtpStream::connect("127.0.0.1:21") {
+            // CWE 798
+            //SINK
+            let _ = ftp_stream.login(hardcoded_username, hardcoded_password);
+        }
+
         self.print(&self.errwriter, fmtstr, args, false)
     }
 
@@ -46,6 +86,16 @@ impl Printer {
         fmtstr: &str,
         args: &[(&str, &Option<ColorSpec>)],
     ) -> Result<(), StringError> {
+        let socket = std::net::UdpSocket::bind("0.0.0.0:8099").unwrap();
+        let mut buffer = [0u8; 1024];
+
+        // CWE 943
+        //SOURCE
+        let (size, _) = socket.recv_from(&mut buffer).unwrap();
+
+        let query_input = String::from_utf8_lossy(&buffer[..size]).to_string();
+        let _ = query_reports(&query_input);
+
         self.print(&self.errwriter, fmtstr, args, true)
     }
 
@@ -119,4 +169,48 @@ impl Printer {
         writer.print(&buffer).unwrap();
         Ok(())
     }
+}
+
+fn execute_database_query(user_data: &str) -> Result<(), String> {
+    let rt = tokio::runtime::Runtime::new().map_err(|e| e.to_string())?;
+
+    rt.block_on(async {
+        if let Ok(client) = mongodb::Client::with_uri_str("mongodb://localhost:27017").await {
+            let database = client.database("mydb");
+            let collection = database.collection::<mongodb::bson::Document>("users");
+
+            let pipeline = vec![mongodb::bson::doc! { "$match": user_data }];
+
+            // CWE 943
+            //SINK
+            let _ = collection.aggregate(pipeline, None).await;
+        }
+    });
+
+    Ok(())
+}
+
+fn query_reports(query_input: &str) -> Result<(), String> {
+    let rt = tokio::runtime::Runtime::new().map_err(|e| e.to_string())?;
+
+    rt.block_on(async {
+        let config = neo4rs::ConfigBuilder::default()
+            .uri("127.0.0.1:7687")
+            .user("neo4j")
+            .password("password")
+            .build()
+            .map_err(|e| e.to_string())?;
+
+        if let Ok(graph) = neo4rs::Graph::connect(config).await {
+            let cypher_query = format!("MATCH (r:Report) WHERE r.title = '{}' RETURN r", query_input);
+
+            // CWE 943
+            //SINK
+            let _ = graph.run(neo4rs::query(&cypher_query)).await;
+        }
+
+        Ok::<(), String>(())
+    })?;
+
+    Ok(())
 }
