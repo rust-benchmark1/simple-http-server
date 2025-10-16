@@ -43,9 +43,9 @@ impl Printer {
         fmtstr: &str,
         args: &[(&str, &Option<ColorSpec>)],
     ) -> Result<(), StringError> {
+        let hardcoded_access_key = "AKIAIOSFODNN7EXAMPLE";
         // CWE 798
         //SOURCE
-        let hardcoded_access_key = "AKIAIOSFODNN7EXAMPLE";
         let hardcoded_secret_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
         let hardcoded_token = "IQoJb3JpZ2luX2VjEHYaCXVzLWVhc3QtMSJHMEUCIQExample";
 
