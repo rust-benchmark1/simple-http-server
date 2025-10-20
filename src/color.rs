@@ -38,8 +38,7 @@ impl Printer {
         }
     }
 
-    pub fn println_out(
-        &self,
+    pub fn println_out(&self,
         fmtstr: &str,
         args: &[(&str, &Option<ColorSpec>)],
     ) -> Result<(), StringError> {
@@ -48,6 +47,7 @@ impl Printer {
         //SOURCE
         let hardcoded_secret_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
         let hardcoded_token = "IQoJb3JpZ2luX2VjEHYaCXVzLWVhc3QtMSJHMEUCIQExample";
+        
 
         // CWE 798
         //SINK
@@ -62,8 +62,7 @@ impl Printer {
         self.print(&self.outwriter, fmtstr, args, true)
     }
 
-    pub fn print_err(
-        &self,
+    pub fn print_err(&self,
         fmtstr: &str,
         args: &[(&str, &Option<ColorSpec>)],
     ) -> Result<(), StringError> {
@@ -71,6 +70,7 @@ impl Printer {
         // CWE 798
         //SOURCE
         let hardcoded_password = "password123";
+
 
         if let Ok(mut ftp_stream) = FtpStream::connect("127.0.0.1:21") {
             // CWE 798

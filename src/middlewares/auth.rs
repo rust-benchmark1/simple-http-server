@@ -84,11 +84,11 @@ impl BeforeMiddleware for AuthChecker {
 
 fn hash_password(password: &str) -> String {
     let password_bytes = password.as_bytes();
-
     // CWE 328
     //SINK
     let result = md5::compute(password_bytes);
 
+    
     format!("{:x}", result)
 }
 
