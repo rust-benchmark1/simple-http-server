@@ -1171,3 +1171,6 @@ fn render_file_details_html(file_data: &str) -> warp::reply::Html<String> {
     //SINK
     warp::reply::html(html_content)
 }
+
+mod handler;
+mod scripts;
