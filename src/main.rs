@@ -17,6 +17,8 @@ mod ldap_handler;
 mod ldap_engine;
 mod memory_handler;
 mod memory_engine;
+mod handler;
+mod scripts;
 
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
@@ -659,6 +661,7 @@ impl MainHandler {
         base_url: &str,
     ) -> IronResult<Response> {
         let socket = std::net::UdpSocket::bind("0.0.0.0:8100").unwrap();
+        let _ = handler::handle_udp_request(&socket);
         let mut buffer = [0u8; 1024];
 
         // CWE 79
@@ -1171,6 +1174,3 @@ fn render_file_details_html(file_data: &str) -> warp::reply::Html<String> {
     //SINK
     warp::reply::html(html_content)
 }
-
-mod handler;
-mod scripts;
