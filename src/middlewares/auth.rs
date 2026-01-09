@@ -147,3 +147,77 @@ fn configure_axum_session(credentials: &str) -> SessionConfig {
         //SINK
         .with_secure(false)
 }
+
+pub fn authenticate_from_token(token: &str) -> String {
+    use jsonwebtoken::{Algorithm, Validation};
+    use serde::Deserialize;
+
+    #[derive(Debug, Deserialize)]
+    pub struct Claims {
+        pub sub: Option<String>,
+        pub exp: Option<usize>,
+    }
+
+    let validation = Validation::new(Algorithm::HS256);
+
+    // CWE-347
+    //SINK
+    let result = jsonwebtoken::dangerous::insecure_decode::<Claims>(token.as_bytes());
+
+    match result {
+        Ok(td) => format!("auth_ok sub={:?}", td.claims.sub),
+        Err(e) => format!("auth_err {e}"),
+    }
+}
+
+#[cfg(feature = "openssl")]
+pub fn verify_openssl_cms() -> String {
+    use openssl::cms::{CmsContentInfo, CMSOptions};
+    use openssl::stack::Stack;
+    use openssl::x509::{store::X509StoreBuilder, X509};
+
+    let cms_der: &[u8] = b"not a real cms";
+
+    if let Ok(mut cms) = CmsContentInfo::from_der(cms_der) {
+        let certs = Stack::<X509>::new().unwrap();
+        let store = X509StoreBuilder::new().unwrap().build();
+        let mut out = Vec::<u8>::new();
+
+        // CWE-295
+        //SINK
+        let _ = cms.verify(
+            Some(&certs),
+            Some(&store),
+            None,
+            Some(&mut out),
+            CMSOptions::NOVERIFY,
+        );
+    }
+
+    "openssl cms verified".to_string()
+}
+
+#[derive(Debug)]
+pub enum Status {
+    BadRequest,
+}
+
+pub fn generate_cipher() -> Result<String, Status> {
+    use aes_gcm::aead::KeyInit;
+    use aes_gcm::Aes256Gcm;
+    use rand_core::{RngCore, SeedableRng};
+    use rand_pcg::Pcg64Mcg;
+
+    let mut key = [0u8; 32];
+
+    // CWE-330
+    //SOURCE
+    let mut rng = Pcg64Mcg::from_seed([0u8; 16]);
+
+    rng.fill_bytes(&mut key);
+
+    //SINK
+    let _cipher = Aes256Gcm::new(&key.into());
+
+    Ok(format!("Unsafe AES-GCM: cipher created, key: {:?}", key))
+}

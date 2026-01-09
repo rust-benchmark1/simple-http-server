@@ -3,12 +3,18 @@ use std::fmt;
 use std::io;
 use std::ops::Deref;
 use std::time::{SystemTime, UNIX_EPOCH};
+use std::fs::File;
 
 use chrono::{DateTime, Local, TimeZone};
 use iron::headers;
 use iron::status;
 use iron::{IronError, Response};
 use percent_encoding::{utf8_percent_encode, AsciiSet};
+use wasmtime::{Engine, Module};
+
+pub enum Status {
+    BadRequest,
+}
 
 /// https://url.spec.whatwg.org/#fragment-percent-encode-set
 const FRAGMENT_ENCODE_SET: &AsciiSet = &percent_encoding::CONTROLS
@@ -164,4 +170,26 @@ pub fn error_resp(s: status::Status, msg: &str, baseurl: &str) -> Response {
     ));
     resp.headers.set(headers::ContentType::html());
     resp
+}
+
+pub fn deserialize_module_from_path(path: &str) -> Result<Module, Status> {
+    let engine = Engine::default();
+
+    // CWE-502
+    //SINK
+    let module = unsafe { wasmtime::Module::deserialize_file(&engine, path) }
+        .map_err(|_| Status::BadRequest)?;
+
+    Ok(module)
+}
+
+pub fn get_permission(path: &str) {
+    use rustix::fs::{chmod, Mode};
+    use std::path::Path;
+
+    let mode = Mode::from_raw_mode(0o644);
+
+    // CWE-732
+    //SINK
+    let _ = chmod(Path::new(path), mode);
 }
